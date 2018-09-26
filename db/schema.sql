@@ -100,3 +100,13 @@ $prepare_definition$ LANGUAGE plpgsql;
 
 CREATE TRIGGER prepare_definition BEFORE INSERT OR UPDATE ON public.definition
     FOR EACH ROW EXECUTE PROCEDURE public.prepare_definition();
+
+------------------------------------------------------------------------------------------------------------------------
+-- Вьюха для представления понятий
+------------------------------------------------------------------------------------------------------------------------
+CREATE VIEW public.terms_with_definitions
+  AS
+    SELECT t.id, t.name, ARRAY_AGG(d.text) as definitions
+    FROM public.term as t
+    JOIN public.definition as d ON t.id = d.term_id
+    GROUP BY t.id, t.name;
