@@ -52,3 +52,26 @@ ALTER TABLE ONLY public.definition
 
 ALTER TABLE ONLY public.definition
     ADD CONSTRAINT definition_term_id_fkey FOREIGN KEY (term_id) REFERENCES public.term(id);
+
+
+------------------------------------------------------------------------------------------------------------------------
+-- Триггер на подготовку данных при изменении таблицы term
+------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.prepare_term() RETURNS trigger AS $prepare_term$
+BEGIN
+    NEW.name = TRIM(NEW.name);
+    NEW.name = REGEXP_REPLACE(NEW.name, '\s+', ' ', 'g');
+
+    IF LENGTH(NEW.name) < 1 THEN
+        RAISE EXCEPTION 'column name in public.term must contain symbol';
+    END IF;
+
+    NEW.name = UPPER(SUBSTR(NEW.name, 1, 1)) || SUBSTR(NEW.name, 2);
+
+    RETURN NEW;
+END;
+
+$prepare_term$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prepare_term BEFORE INSERT OR UPDATE ON public.term
+    FOR EACH ROW EXECUTE PROCEDURE public.prepare_term();
