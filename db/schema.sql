@@ -53,21 +53,32 @@ ALTER TABLE ONLY public.definition
 ALTER TABLE ONLY public.definition
     ADD CONSTRAINT definition_term_id_fkey FOREIGN KEY (term_id) REFERENCES public.term(id);
 
+------------------------------------------------------------------------------------------------------------------------
+-- Общие функции
+------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.normalize_string(in_str VARCHAR, empty_error_msg VARCHAR) RETURNS varchar AS $normalize_string$
+DECLARE
+    result VARCHAR;
+BEGIN
+    result = TRIM(in_str);
+    result = REGEXP_REPLACE(result, '\s+', ' ', 'g');
+
+    IF LENGTH(result) < 1 THEN
+        RAISE EXCEPTION '%', empty_error_msg;
+    END IF;
+
+    RETURN result;
+END;
+
+$normalize_string$ LANGUAGE plpgsql;
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Триггер на подготовку данных при изменении таблицы term
 ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.prepare_term() RETURNS trigger AS $prepare_term$
 BEGIN
-    NEW.name = TRIM(NEW.name);
-    NEW.name = REGEXP_REPLACE(NEW.name, '\s+', ' ', 'g');
-
-    IF LENGTH(NEW.name) < 1 THEN
-        RAISE EXCEPTION 'column name in public.term must contain symbol';
-    END IF;
-
+    NEW.name = normalize_string(NEW.name, 'column name in public.term must contain symbol');
     NEW.name = UPPER(SUBSTR(NEW.name, 1, 1)) || SUBSTR(NEW.name, 2);
-
     RETURN NEW;
 END;
 
@@ -75,3 +86,17 @@ $prepare_term$ LANGUAGE plpgsql;
 
 CREATE TRIGGER prepare_term BEFORE INSERT OR UPDATE ON public.term
     FOR EACH ROW EXECUTE PROCEDURE public.prepare_term();
+
+------------------------------------------------------------------------------------------------------------------------
+-- Триггер на подготовку данных при изменении таблицы definition
+------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.prepare_definition() RETURNS trigger AS $prepare_definition$
+BEGIN
+    NEW.text = normalize_string(NEW.text, 'column text in public.definition must contain symbol');
+    RETURN NEW;
+END;
+
+$prepare_definition$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prepare_definition BEFORE INSERT OR UPDATE ON public.definition
+    FOR EACH ROW EXECUTE PROCEDURE public.prepare_definition();
