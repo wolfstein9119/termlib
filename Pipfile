@@ -6,6 +6,8 @@ name = "pypi"
 [dev-packages]
 
 [packages]
+asyncpg = "==0.17.0"
+elasticsearch-dsl = "==6.2.1"
 
 [requires]
 python_version = "3.7"
