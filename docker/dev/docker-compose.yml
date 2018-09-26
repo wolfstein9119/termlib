@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:10-alpine
+    container_name: termlib_db_dev
+    ports:
+      - 5433:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - .env
