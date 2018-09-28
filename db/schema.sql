@@ -106,7 +106,11 @@ CREATE TRIGGER prepare_definition BEFORE INSERT OR UPDATE ON public.definition
 ------------------------------------------------------------------------------------------------------------------------
 CREATE VIEW public.terms_with_definitions
   AS
-    SELECT t.id, t.name, ARRAY_AGG(d.text) as definitions
+    WITH defs AS (
+        SELECT * FROM definition
+        ORDER BY priority
+    )
+    SELECT t.id, t.name, ARRAY_AGG(defs.text) as definitions
     FROM public.term as t
-    JOIN public.definition as d ON t.id = d.term_id
+    JOIN defs ON t.id = defs.term_id
     GROUP BY t.id, t.name;

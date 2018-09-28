@@ -10,3 +10,9 @@ services:
       - ./data/db:/var/lib/postgresql/data
     env_file:
       - .env
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+    container_name: termlib_elastic_dev
+    ports:
+      - 9300:9200
