@@ -1,6 +1,6 @@
-from elasticsearch_dsl import Integer, Text, Keyword
+from elasticsearch_dsl import Integer, Text
 
-from .base import BaseDocument
+from .base import BaseDocument, RUSSIAN_INDEX_SETTINGS
 
 
 class Term(BaseDocument):
@@ -11,6 +11,7 @@ class Term(BaseDocument):
     class Index:
         name = 'terms'
         doc_type = 'term'
+        settings = RUSSIAN_INDEX_SETTINGS
 
     class Meta:
         doc_type = 'term'

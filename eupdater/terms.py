@@ -47,6 +47,7 @@ class TermUpdater(BaseUpdater):
             executor=self._process_pool,
             func=partial(prepare_for_bulk_elastic, elastic_data=elastic_data)
         )
+        Term.reinit_index()
         result = await loop.run_in_executor(
             executor=self._thread_pool,
             func=partial(
