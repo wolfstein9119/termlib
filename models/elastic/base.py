@@ -6,7 +6,7 @@ class BaseDocument(Document):
     def generate_elastic_id(self):
         return getattr(self, 'id', None)
 
-    def to_dict(self, include_meta=False, skip_empty=True):
+    def to_dict(self, include_meta=False, skip_empty=True) -> dict:
         result = super().to_dict(
             include_meta=include_meta,
             skip_empty=skip_empty,
