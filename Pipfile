@@ -9,6 +9,7 @@ name = "pypi"
 asyncpg = "==0.17.0"
 elasticsearch-dsl = "==6.2.1"
 aiotg = "==0.9.9"
+aioredis = "==1.1.0"
 
 [requires]
 python_version = "3.7"
