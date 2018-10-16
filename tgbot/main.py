@@ -1,11 +1,10 @@
 import optparse
 import asyncio
 
-from aiotg import Bot
-
+from tgbot.bot import Bot
 from tgbot.config import load_settings
 from tgbot.router import set_routes
-from tgbot.context import init_all_context
+from tgbot.context import get_bot_context
 
 
 def _get_options():
@@ -24,11 +23,12 @@ def main():
     config = load_settings(options.config)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        init_all_context(config=config)
+    bot_context = loop.run_until_complete(
+        get_bot_context(config=config)
     )
 
     bot = Bot(
+        bot_context=bot_context,
         api_token=config.tg_api_token
     )
     set_routes(

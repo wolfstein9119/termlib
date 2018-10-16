@@ -1,4 +1,6 @@
-from aiotg import Bot, Chat
+from aiotg import Chat
+
+from .bot import Bot
 
 from .handlers import (
     start,
