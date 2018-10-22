@@ -1,6 +1,11 @@
 from aiotg import Chat
 
-from ..chat_info import new as new_chat_info
+from ..chat_info import (
+    new_chat_info,
+    ChatModes,
+)
+from ..helpers import format_start_message
+from ..constants import TG_PARSE_MODE
 
 
 async def start(chat: Chat, match):
@@ -8,4 +13,11 @@ async def start(chat: Chat, match):
         chat_id=chat.id,
         bot_context=chat.bot.bot_context
     )
-    return chat.reply('Привет! Если затрудняешься, то набери /help :)')
+    await chat_info.save_to_redis()
+    start_message = format_start_message(
+        mode_verbose_name=ChatModes.VERBOSE_NAME_RESOLVER[chat_info.mode]
+    )
+    return chat.reply(
+        text=start_message,
+        parse_mode=TG_PARSE_MODE
+    )

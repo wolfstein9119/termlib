@@ -17,6 +17,6 @@ def set_routes(bot: Bot):
     async def help_handler(chat: Chat, match):
         await help(chat, match)
 
-    @bot.default
-    async def echo(chat: Chat, message):
-        return chat.reply(message['text'])
+    # @bot.default
+    # async def echo(chat: Chat, message):
+    #     return chat.reply(message['text'])
